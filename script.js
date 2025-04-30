@@ -54,7 +54,7 @@ for (let i of document.querySelectorAll(".tab")) {
 let w = new Worker("w.js");
 w.onmessage = function (e) {
     if (e.data.type == "analysis") {
-        document.getElementById("analysisContent").innerHTML = ""
+        document.getElementById("analysisContent").innerHTML = "";
         for (let i of e.data.analysis) {
             let analysisLine = document.createElement("div");
             analysisLine.classList.add("analysis-line")
