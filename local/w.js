@@ -15,7 +15,7 @@ function workerMsg(e) {
     if (e.type == "computerPlay") {
         workerScope.playerColor = e.color;
         workerScope.board = e.board;
-        workerScope.searchDepth = e.depth
+        workerScope.searchDepth = e.depth;
         mainMsg({
             type: "analysis",
             analysis: cpu(),
@@ -95,32 +95,6 @@ function getValidMoves(currentBoard, color) {
     }
     return situations;
 }
-function search(currentMove, depth, color, playerColor) {
-    if (depth >= 1) {
-        let moves = getValidMoves(currentMove.board, color);
-        positionsConsidered += moves.length;
-        for (let i = 0; i < moves.length; i++) {
-            if (depth >= 2) {
-                moves[i].nextMoves = search(moves[i], depth - 1, -color, playerColor);
-                if (!moves[i].nextMoves.length) moves[i].nextMoves.push({
-                    board: moves[i].board,
-                    lastColorPlayed: -color,
-                    evaluation: evaluate(moves[i].board, playerColor)
-                });
-                moves[i].evaluation = (color == playerColor) ? Math.min(...moves[i].nextMoves.map((x) => x.evaluation)) : Math.max(...moves[i].nextMoves.map((x) => x.evaluation));
-                if (moves[1]?.evaluation) {
-                    if ((color == playerColor && moves[0].evaluation >= moves[1].evaluation) || (color != playerColor && moves[0].evaluation <= moves[1].evaluation)) moves.splice(1, 1);
-                    else moves.splice(0, 1);
-                    i--;
-                }
-            } else if (depth == 1) {
-                moves[i].evaluation = evaluate(moves[i].board, playerColor);
-            }
-        }
-        return moves;
-    }
-}
-
 function searchAlpha(currentMove, depth, color, playerColor, parentBestVal, clearNextMoves, isShallowSearch, isLastPass) {
     let currentBoard = currentMove.board;
     if (currentMove.nextMoves.length) {
@@ -373,35 +347,11 @@ function getStableDiscs(currentBoard) {
     }
     return arr;
 }
-function initSearch(currentBoard, depth, color) {
-    return search({
-        board: currentBoard
-    }, depth, color, color);
-}
-function evaluate(currentBoard, player) {
-    positionsConsidered++;
-    let flat = currentBoard.flat();
-    if (!flat.includes(player)) return 64 * 17;
-    else if (!flat.includes(-player)) return -64 * 17;
-    else if (!flat.includes(0)) {
-        let sortedFlat = flat.sort();
-        return (sortedFlat.indexOf(1) - 32) * 2 * player * 17;
-    }
-    let evaluation = 0;
-    let stableDiscs = getStableDiscs(currentBoard);
-    for (let m = 0; m < 8; m++) {
-        for (let n = 0; n < 8; n++) {
-            evaluation += ((stableDiscs[m][n]) ? -17 : STATIC_TABLE[m][n]) * currentBoard[m][n];
-        }
-    }
-    evaluation *= player;
-    return evaluation;
-}
 function evaluateNew(bd, player) {
     positionsConsidered++;
     let evaluation = 0;
     let discs = discCount(bd);
-    if (!getValidMoves(bd, 1).length && !getValidMoves(bd, -1).length) {
+    if (/*!getValidMoves(bd, 1).length && !getValidMoves(bd, -1).length*/discs.black+discs.white==64) {
         let blackAdvantageAnti = 0;
         if (discs.black != discs.white) {
             blackAdvantageAnti = (64 - discs.black - discs.white + Math.abs(discs.black - discs.white)) * ((discs.black < discs.white) ? 1 : -1)
@@ -601,7 +551,7 @@ function evaluateNew(bd, player) {
         getPatternNo(bd[0][7], bd[1][6], bd[2][5], bd[3][4], bd[4][3], bd[5][2], bd[6][1], bd[7][0]),
         getPatternNo(bd[7][0], bd[6][1], bd[5][2], bd[4][3], bd[3][4], bd[2][5], bd[1][6], bd[0][7])
     )]||0;
-    evaluation /= 50;
+    evaluation /= 46//50;
     if(negateEval)evaluation*=-1;
     return evaluation * player;
 }

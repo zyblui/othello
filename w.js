@@ -120,31 +120,6 @@ function validMovesArr() {
     }
     return situations;
 }
-function search(currentMove, depth, color, playerColor) {
-    if (depth >= 1) {
-        let moves = getValidMoves(currentMove.board, color);
-        positionsConsidered += moves.length;
-        for (let i = 0; i < moves.length; i++) {
-            if (depth >= 2) {
-                moves[i].nextMoves = search(moves[i], depth - 1, -color, playerColor);
-                if (!moves[i].nextMoves.length) moves[i].nextMoves.push({
-                    board: moves[i].board,
-                    lastColorPlayed: -color,
-                    evaluation: evaluate(moves[i].board, playerColor)
-                });
-                moves[i].evaluation = (color == playerColor) ? Math.min(...moves[i].nextMoves.map((x) => x.evaluation)) : Math.max(...moves[i].nextMoves.map((x) => x.evaluation));
-                if (moves[1]?.evaluation) {
-                    if ((color == playerColor && moves[0].evaluation >= moves[1].evaluation) || (color != playerColor && moves[0].evaluation <= moves[1].evaluation)) moves.splice(1, 1);
-                    else moves.splice(0, 1);
-                    i--;
-                }
-            } else if (depth == 1) {
-                moves[i].evaluation = evaluate(moves[i].board, playerColor);
-            }
-        }
-        return moves;
-    }
-}
 
 function searchAlpha(currentMove, depth, color, playerColor, parentBestVal, clearNextMoves, isShallowSearch, isLastPass) {
     let currentBoard = currentMove.board;
@@ -398,11 +373,6 @@ function getStableDiscs(currentBoard) {
     }
     return arr;
 }
-function initSearch(currentBoard, depth, color) {
-    return search({
-        board: currentBoard
-    }, depth, color, color);
-}
 let positionsConsidered = 0;
 function evaluate(currentBoard, player) {
     positionsConsidered++;
@@ -427,7 +397,7 @@ function evaluateNew(bd, player) {
     positionsConsidered++;
     let evaluation = 0;
     let discs = discCount(bd);
-    if (!getValidMoves(bd, 1).length && !getValidMoves(bd, -1).length) {
+    if (/*!getValidMoves(bd, 1).length && !getValidMoves(bd, -1).length*/discs.black+discs.white==64) {
         let blackAdvantageAnti = 0;
         if (discs.black != discs.white) {
             blackAdvantageAnti = (64 - discs.black - discs.white + Math.abs(discs.black - discs.white)) * ((discs.black < discs.white) ? 1 : -1)
@@ -627,7 +597,7 @@ function evaluateNew(bd, player) {
         getPatternNo(bd[0][7], bd[1][6], bd[2][5], bd[3][4], bd[4][3], bd[5][2], bd[6][1], bd[7][0]),
         getPatternNo(bd[7][0], bd[6][1], bd[5][2], bd[4][3], bd[3][4], bd[2][5], bd[1][6], bd[0][7])
     )] || 0;
-    evaluation /= 50;
+    evaluation /= 46//50;
     if (negateEval) evaluation *= -1;
     return evaluation * player;
 }
