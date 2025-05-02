@@ -13,14 +13,9 @@ workerScope.playerColor = 1;
 workerScope.searchDepth = 6;
 function workerMsg(e) {
     if (e.type == "computerPlay") {
-        playerColor = e.color;
-        board = e.board;
-        searchDepth = e.depth
-        /*postMessage({
-            type: "analysis",
-            analysis: cpu(),
-            nodes: positionsConsidered
-        });*/
+        workerScope.playerColor = e.color;
+        workerScope.board = e.board;
+        workerScope.searchDepth = e.depth
         mainMsg({
             type: "analysis",
             analysis: cpu(),
@@ -30,8 +25,8 @@ function workerMsg(e) {
 }
 workerScope.positionsConsidered = 0;
 function cpu() {
-    let discs = discCount(board).black + discCount(board).white;
-    let result = initSearchSort(board, searchDepth, playerColor);
+    let discs = discCount(workerScope.board).black + discCount(workerScope.board).white;
+    let result = initSearchSort(workerScope.board, workerScope.searchDepth, workerScope.playerColor);
     console.log(result);
     result.sort(function (a, b) {
         return b.evaluation - a.evaluation;
@@ -41,7 +36,7 @@ function cpu() {
     for (let r of result) {
         for (let i = 0; i <= 7; i++) {
             for (let j = 0; j <= 7; j++) {
-                if (board[i][j] == 0 && r.board[i][j] != 0) {
+                if (workerScope.board[i][j] == 0 && r.board[i][j] != 0) {
                     analysis.push({
                         coord: LETTERS[j] + (i + 1),
                         evaluation: r.evaluation
@@ -104,7 +99,7 @@ function validMovesArr() {
     let situations = []
     for (let m = 0; m <= 7; m++) {
         for (let n = 0; n <= 7; n++) {
-            let placeResult = placeDisc(board, m, n, playerColor);
+            let placeResult = placeDisc(workerScope.board, m, n, workerScope.playerColor);
             if (placeResult.isValid) {
                 situations.push(m * 8 + n);
             }
@@ -418,6 +413,13 @@ function evaluateNew(bd, player) {
     positionsConsidered++;
     let evaluation = 0;
     let discs = discCount(bd);
+    if (!getValidMoves(bd, 1).length && !getValidMoves(bd, -1).length) {
+        let blackAdvantageAnti = 0;
+        if (discs.black != discs.white) {
+            blackAdvantageAnti = (64 - discs.black - discs.white + Math.abs(discs.black - discs.white)) * ((discs.black < discs.white) ? 1 : -1)
+        }
+        return blackAdvantageAnti * -player;
+    }
     let moveIndex = discs.black + discs.white - 4 - 1;
     evaluation += coeffs[moveIndex]["corner33"][Math.min(
         getPatternNo(bd[0][0], bd[0][1], bd[0][2], bd[1][0], bd[1][1], bd[1][2], bd[2][0], bd[2][1], bd[2][2]),
