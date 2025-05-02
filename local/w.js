@@ -95,18 +95,6 @@ function getValidMoves(currentBoard, color) {
     }
     return situations;
 }
-function validMovesArr() {
-    let situations = []
-    for (let m = 0; m <= 7; m++) {
-        for (let n = 0; n <= 7; n++) {
-            let placeResult = placeDisc(workerScope.board, m, n, workerScope.playerColor);
-            if (placeResult.isValid) {
-                situations.push(m * 8 + n);
-            }
-        }
-    }
-    return situations;
-}
 function search(currentMove, depth, color, playerColor) {
     if (depth >= 1) {
         let moves = getValidMoves(currentMove.board, color);
