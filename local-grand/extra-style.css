@@ -1,0 +1,120 @@
+#board-container.large {
+    .r1 {
+        top: 0
+    }
+
+    .r2 {
+        top: 56px
+    }
+
+    .r3 {
+        top: 112px
+    }
+
+    .r4 {
+        top: 168px
+    }
+
+    .r5 {
+        top: 224px
+    }
+
+    .r6 {
+        top: 280px
+    }
+
+    .r7 {
+        top: 336px
+    }
+
+    .r8 {
+        top: 392px
+    }
+
+    .r9 {
+        top: 448px
+    }
+
+    .r10 {
+        top: 504px
+    }
+
+    .c1 {
+        left: 0
+    }
+
+    .c2 {
+        left: 56px
+    }
+
+    .c3 {
+        left: 112px
+    }
+
+    .c4 {
+        left: 168px
+    }
+
+    .c5 {
+        left: 224px
+    }
+
+    .c6 {
+        left: 280px
+    }
+
+    .c7 {
+        left: 336px
+    }
+
+    .c8 {
+        left: 392px
+    }
+
+    .c9 {
+        left: 448px
+    }
+
+    .c10 {
+        left: 504px
+    }
+
+    .grid {
+        width: 55.5px;
+        height: 55.5px;
+    }
+
+    .grid.black::before,
+    .grid.white::before {
+        width: 44.8px;
+        height: 44.8px;
+        top: 3.6px;
+        left: 3.6px
+    }
+
+    .move::before {
+        top: 22.5px;
+        left: 22.5px;
+    }
+
+    .lastMove::after {
+        top: -24.5px;
+        left: 22.5px;
+    }
+
+    .dot-left {
+        left: 163px;
+    }
+
+    .dot-right {
+        right: 163px;
+    }
+
+    .dot-top {
+        top: 163px;
+    }
+
+    .dot-bottom {
+        bottom: 163px;
+    }
+}
